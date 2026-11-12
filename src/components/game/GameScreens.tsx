@@ -23,18 +23,19 @@ function Frame({ phase, children }: { phase: Phase; children: ReactNode }) {
   const current = steps.indexOf(phase);
   return <div className="gm-screen gm-flow">
     <header className="gm-header">
-      <Button variant="ghost" className="gm-mark" onClick={() => s.go("menu")} aria-label={t("ui.game.home")}>◈ <strong>MISSION <span>FORGE</span></strong></Button>
+      <Button variant="ghost" className="gm-mark" onClick={() => s.goHome()} aria-label={t("ui.nav.backHome")}>◈ <strong>MISSION <span>FORGE</span></strong></Button>
       {current >= 0 && <div className="gm-flow-progress"><span>{String(current + 1).padStart(2, "0")} / {steps.length}</span><div><i style={{ width: `${(current + 1) / steps.length * 100}%` }} /></div><b>{phase === "vehicle" ? t("launchVehicle.title") : t(`ui.flow.${nameKey[phase]}`)}</b></div>}
       <div className="gm-header-tools">
         {phase !== "menu" && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => s.go("menu")}
-            aria-label={t("ui.game.home")}
-            className="flex items-center gap-1 text-xs text-cyan-300 hover:text-white"
+            onClick={() => s.goHome()}
+            aria-label={t("ui.nav.backHome")}
+            title={t("ui.nav.backHome")}
+            className="flex items-center gap-1 rounded-md border border-cyan-500/40 bg-slate-900/70 text-xs font-bold text-cyan-300 hover:text-white"
           >
-            <Home size={15} /> <span className="hidden sm:inline">{t("ui.game.home")}</span>
+            <Home size={15} /> <span className="sm:hidden">{t("ui.game.home")}</span><span className="hidden sm:inline">{t("ui.nav.backHome")}</span>
           </Button>
         )}
         <span className="gm-signal">{t("exp.simulation")}</span>
@@ -43,7 +44,7 @@ function Frame({ phase, children }: { phase: Phase; children: ReactNode }) {
       </div>
     </header>
     {children}
-    {menu && <div className="gm-backdrop" onClick={() => setMenu(false)}><section className="gm-dialog" onClick={e => e.stopPropagation()}><Button variant="ghost" size="icon" className="gm-close" aria-label={t("ui.learn.close")} onClick={() => setMenu(false)}><X /></Button><h2>{t("ui.game.options")}</h2><Button variant="secondary" onClick={() => { s.go("menu"); setMenu(false); }}><Home size={16} /> 🏠 {t("ui.game.home")}</Button><label>{t("ui.voice.language")}<select value={s.lang} onChange={e => s.set({ lang: e.target.value as typeof s.lang })}>{LANGS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></label><Button variant="secondary" onClick={() => s.set({ quality: s.quality === "high" ? "low" : "high" })}><Settings2 /> {t("ui.game.graphics")}: {s.quality}</Button><Button variant="secondary" onClick={() => { s.openVideo("v01"); setMenu(false); }}><Sparkles /> 🎬 {t("ui.nav.learn")} · Video Academy</Button><Button variant="secondary" onClick={() => { s.set({ learn: "index" }); setMenu(false); }}><BookOpen /> {t("ui.learn.title")}</Button><p>NASA NSSDCA · NASA/JPL Horizons · NASA Image and Video Library</p></section></div>}
+    {menu && <div className="gm-backdrop" onClick={() => setMenu(false)}><section className="gm-dialog" onClick={e => e.stopPropagation()}><Button variant="ghost" size="icon" className="gm-close" aria-label={t("ui.learn.close")} onClick={() => setMenu(false)}><X /></Button><h2>{t("ui.game.options")}</h2><Button variant="secondary" onClick={() => { s.goHome(); setMenu(false); }}><Home size={16} /> {t("ui.nav.backHome")}</Button><Button variant="secondary" onClick={() => { s.enterCityPlaza(); setMenu(false); }}><Compass /> {t("ui.nav.flightPlan")} · {t("ui.nav.cityPlaza")}</Button><label>{t("ui.voice.language")}<select value={s.lang} onChange={e => s.set({ lang: e.target.value as typeof s.lang })}>{LANGS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></label><Button variant="secondary" onClick={() => s.set({ quality: s.quality === "high" ? "low" : "high" })}><Settings2 /> {t("ui.game.graphics")}: {s.quality}</Button><Button variant="secondary" onClick={() => { s.openAcademy(); setMenu(false); }}><Sparkles /> 🎬 {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}</Button><Button variant="secondary" onClick={() => { s.set({ learn: "index" }); setMenu(false); }}><BookOpen /> {t("ui.learn.title")}</Button><p>NASA NSSDCA · NASA/JPL Horizons · NASA Image and Video Library</p></section></div>}
     {mentor && <Mentor onClose={() => setMentor(false)} />}
   </div>;
 }
@@ -74,24 +75,25 @@ function Start() {
             if (!s.hasSeenIntroVideo) {
               s.openCadetIntro();
             } else {
-              s.go("city");
+              s.enterCityPlaza();
             }
           }}
           className="bg-cyan-500 font-bold text-slate-950 hover:bg-cyan-400"
         >
-          <Rocket /> Explore Forge City (3D Hub) <ArrowRight />
+          <Rocket /> {t("ui.nav.cityPlaza")} <ArrowRight />
         </Button>
-        <Button size="lg" variant="secondary" onClick={() => s.newRun("missions")}>
-          Direct Flight Plan <ArrowRight />
+        {/* Flight Plan always lands in Central City Plaza, the primary hub; missions launch from its Space Center. */}
+        <Button size="lg" variant="secondary" onClick={() => s.enterCityPlaza()}>
+          <Compass /> {t("ui.nav.flightPlan")} <ArrowRight />
         </Button>
       </div>
       <div>
         <Button
           variant="secondary"
-          onClick={() => s.openVideo("v01")}
+          onClick={() => s.openAcademy()}
           className="border-amber-400/40 bg-slate-900/80 hover:bg-amber-950/40 text-amber-300 hover:text-amber-200"
         >
-          <Sparkles className="size-4" /> 🎬 {t("ui.nav.learn")} · Video Academy
+          <Sparkles className="size-4" /> 🎬 {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}
         </Button>
       </div>
     </div>

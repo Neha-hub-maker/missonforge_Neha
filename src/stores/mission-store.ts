@@ -65,6 +65,12 @@ type State = Design & {
   quizScores: Record<string, { passed: boolean; score: number; total: number }>;
   openVideo: (videoId: "v01" | "v02" | "v03", initialTab?: "video" | "quiz") => void;
   closeVideo: () => void;
+  /** Opens the Video Academy at the first lesson whose badge is not yet earned. */
+  openAcademy: () => void;
+  /** Universal "Back to Home": closes every modal/overlay and returns to the Home landing stage. */
+  goHome: () => void;
+  /** Primary hub: lands the cadet in Central City Plaza with all overlays closed. */
+  enterCityPlaza: () => void;
   markVideoWatched: (videoId: string) => void;
   recordQuizResult: (videoId: string, score: number, total: number) => void;
   setHasSeenIntroVideo: (seen: boolean) => void;
@@ -149,6 +155,15 @@ export const useMissionStore = create<State>()(
       openVideo: (videoId, initialTab = "video") =>
         set({ videoModal: { isOpen: true, videoId, initialTab } }),
       closeVideo: () => set({ videoModal: null }),
+      openAcademy: () =>
+        set((s) => {
+          const next = (["v01", "v02", "v03"] as const).find((id) => !s.quizScores[id]?.passed) ?? "v01";
+          return { videoModal: { isOpen: true, videoId: next, initialTab: "video" } };
+        }),
+      goHome: () =>
+        set({ phase: "menu", referenceModel: false, videoModal: null, showCadetIntroModal: false, learn: null }),
+      enterCityPlaza: () =>
+        set({ phase: "city", activeCityZone: null, referenceModel: false, videoModal: null, showCadetIntroModal: false, learn: null }),
       markVideoWatched: (videoId) =>
         set((s) => ({
           watchedVideos: s.watchedVideos.includes(videoId)
@@ -156,18 +171,22 @@ export const useMissionStore = create<State>()(
             : [...s.watchedVideos, videoId],
           hasSeenIntroVideo: videoId === "v01" ? true : s.hasSeenIntroVideo,
         })),
+      // Retakes never lose an earned badge: keep the best score and a sticky "passed" flag.
       recordQuizResult: (videoId, score, total) =>
-        set((s) => ({
-          quizScores: {
-            ...s.quizScores,
-            [videoId]: {
-              passed: score >= 2,
-              score,
-              total,
+        set((s) => {
+          const prev = s.quizScores[videoId];
+          return {
+            quizScores: {
+              ...s.quizScores,
+              [videoId]: {
+                passed: score >= 2 || !!prev?.passed,
+                score: Math.max(score, prev?.score ?? 0),
+                total,
+              },
             },
-          },
-          hasSeenIntroVideo: videoId === "v01" ? true : s.hasSeenIntroVideo,
-        })),
+            hasSeenIntroVideo: videoId === "v01" ? true : s.hasSeenIntroVideo,
+          };
+        }),
       setHasSeenIntroVideo: (seen) => set({ hasSeenIntroVideo: seen }),
       resetAllSessions: () => {
         resetAllSessionsAndRestart();
@@ -203,6 +222,9 @@ export const useMissionStore = create<State>()(
           resetAllSessions: _l,
           openCadetIntro: _m,
           closeCadetIntro: _n,
+          openAcademy: _o,
+          goHome: _p,
+          enterCityPlaza: _q,
           ...rest
         } = s;
         void status;

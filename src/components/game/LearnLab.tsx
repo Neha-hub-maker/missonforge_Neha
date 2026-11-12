@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, X } from "lucide-react";
 import { AU_KM, BODIES, LIGHT_KM_S, SOURCES, type BodyId } from "../../lib/nasa-data";
 import { ENGINES } from "../../lib/mission-sim";
 import { LANGS } from "../../locales/resources";
@@ -69,7 +69,7 @@ export function LearnLab() {
   const text = !id ? `${t("ui.learn.mentorGreeting")} ${t("ui.learn.pick")}` : step === 0 ? `${t(`concepts.${id}.ayesha`)} ${t(`concepts.${id}.simple`)}` : step === 1 ? t(`concepts.${id}.demo`) : step === 2 ? t(`concepts.${id}.interactive`) : step === 3 ? t(`concepts.${id}.science`) : step === 4 ? t(`concepts.${id}.formulaNote`) : step === 5 ? t(`concepts.${id}.q`) : t("ui.learn.source");
   return (
     <div className="mf-learn" dir={rtl ? "rtl" : "ltr"} role="dialog" aria-label={t("ui.learn.title")}>
-      <header><h2>{t("ui.learn.title")}</h2><button className="mf-icon" onClick={() => { voice.stop(); s.set({ learn: null }); }} aria-label={t("ui.learn.close")}><X size={22} /></button></header>
+      <header><h2>{t("ui.learn.title")}</h2><div style={{ display: "flex", gap: 8 }}><button className="mf-icon" onClick={() => { voice.stop(); s.goHome(); }} aria-label={t("ui.nav.backHome")} title={t("ui.nav.backHome")}><Home size={20} /></button><button className="mf-icon" onClick={() => { voice.stop(); s.set({ learn: null }); }} aria-label={t("ui.learn.close")}><X size={22} /></button></div></header>
       {!id ? <>
         <div className="mf-learn-mentor-card">
           <div className="mf-mentor-portrait-wrap">

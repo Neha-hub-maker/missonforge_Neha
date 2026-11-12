@@ -1,6 +1,7 @@
 import { useMissionStore } from "../../../stores/mission-store";
 import { Button } from "../../ui/button";
-import { Play, Sparkles, Compass, Rocket, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Play, Sparkles, Compass, Rocket, Home } from "lucide-react";
 import mentorDoctorImg from "../../../assets/mentor-doctor.jpg";
 
 export function FirstTimeCadetIntro() {
@@ -8,7 +9,9 @@ export function FirstTimeCadetIntro() {
   const closeCadetIntro = useMissionStore((s) => s.closeCadetIntro);
   const openVideo = useMissionStore((s) => s.openVideo);
   const setHasSeenIntro = useMissionStore((s) => s.setHasSeenIntroVideo);
-  const go = useMissionStore((s) => s.go);
+  const goHome = useMissionStore((s) => s.goHome);
+  const enterCityPlaza = useMissionStore((s) => s.enterCityPlaza);
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -38,11 +41,11 @@ export function FirstTimeCadetIntro() {
           </div>
 
           <button
-            onClick={closeCadetIntro}
-            aria-label="Close"
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            onClick={goHome}
+            aria-label={t("ui.nav.backHome")}
+            className="flex items-center gap-1 rounded-lg border border-cyan-500/40 px-2 py-1 text-xs font-bold text-cyan-300 hover:bg-slate-800 hover:text-white transition"
           >
-            <X className="size-5" />
+            <Home className="size-4" /> {t("ui.game.home")}
           </button>
         </div>
 
@@ -100,8 +103,7 @@ export function FirstTimeCadetIntro() {
             size="lg"
             onClick={() => {
               setHasSeenIntro(true);
-              closeCadetIntro();
-              go("city");
+              enterCityPlaza();
             }}
             className="border-slate-800 bg-slate-900/80 text-xs text-slate-300 hover:bg-slate-800 hover:text-white"
           >

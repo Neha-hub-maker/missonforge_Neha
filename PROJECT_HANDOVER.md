@@ -10,7 +10,7 @@
 - **Tech Stack:**
   - **Framework:** React 18, Vite, TypeScript
   - **3D Engine:** Three.js, `@react-three/fiber`, `@react-three/drei`
-  - **State Management:** Single-screen unified store (`zustand` in `src/store/mission.store.ts`)
+  - **State Management:** Single-screen unified store (`zustand` in `src/stores/mission-store.ts`)
   - **Routing:** TanStack Router (`@tanstack/react-router`) with a single-screen canvas architecture where phases overlay on the active 3D canvas
   - **Localization:** `i18next` with 6 languages (en, bn, hi, es, ar, fr) in `src/locales/resources.ts`
   - **Styles:** Tailwind CSS + custom glassmorphic HUD in `src/styles.css`
@@ -58,7 +58,7 @@
    - Accessible via:
      - Home page `🎬 Learn · Video Academy` button.
      - First-time Cadet Induction modal (`FirstTimeCadetIntro.tsx`).
-     - Global navigation bar `Videos` tab.
+     - Flow header Options menu (`🎬 Learn · Video Academy`).
      - In-city learning terminals in Central City Plaza (`CityLearningActivity.tsx`).
 
 ---
@@ -69,23 +69,29 @@ The user outlined specific navigation and experience refinements to be completed
 
 ### 1. Navigation Flow & "Back to Home" Button
 - [x] Home page serves as the initial landing stage when entering the app.
-- [ ] **Universal "Back to Home" Button:** Ensure every screen, modal, and sub-phase (`missions`, `vehicle`, `brief`, `route`, `hangar`, `flight`, `report`, `city`) provides an unambiguous, visible `Back to Home` button so cadets never feel stuck.
-- [ ] **Flight Plan Menu Tab:** When clicking the "Flight Plan" / "Explore Forge City" navigation, cleanly transition the user to Central City Plaza as the primary hub.
+- [x] **Universal "Back to Home" Button:** Every screen, modal, and sub-phase provides a visible, labelled `Back to Home` button (short "Home" label on phones). All of them call the single store action `goHome()`, which also closes the Video Academy, Cadet Induction modal and Science Lab so nothing stays open over Home.
+  - Setup flow (`missions` … `build`): `GameScreens.tsx` header + Options menu.
+  - Operations (`check`, `launch`, `flight`, `encounter`, `failure`, `rescue`, `docking`, `landing`, `report`): `Hud.tsx` header.
+  - `city`: `CityOverlay.tsx` header + fast-travel strip. `classroom`/`training`/`research`: `CityLearningActivity.tsx` header.
+  - Modals: `CadetVideoAcademy.tsx`, `FirstTimeCadetIntro.tsx`, `LearnLab.tsx` (Science Lab).
+- [x] **Flight Plan Menu Tab:** Home "Explore Forge City" and "Flight Plan" buttons, the Options menu "Flight Plan · Explore Forge City" item, the induction modal's "Enter City Directly" and the academy's "Explore Forge City Spaceport" all call `enterCityPlaza()`, which lands in Central City Plaza (player respawns at plaza centre, `activeCityZone` cleared, overlays closed). Missions start from the plaza's "Launch Operations" button (`newRun("missions")`).
 
 ### 2. Video Academy & Learn Tab Consolidation
 - [x] First video (V01) integration on Home screen and Cadet induction flow.
-- [ ] **Learn Tab Video Suite:** Inside the "Learn" tab / Central City Plaza Academy, all 3 videos (V01, V02, V03) must be listed with:
-  - Video player modal with clear captions.
-  - Interactive quiz system attached to each video.
-  - Badge tracking (persisted in `useMissionStore`).
-  - Option to re-watch videos and re-take quizzes at any time without resetting game progress.
+- [x] **Learn Tab Video Suite:** Every Learn / Video Academy entry point (Home, Options menu, City Plaza header + strip, Academy classroom) calls `openAcademy()`, which opens the academy at the first lesson whose badge is not yet earned. All 3 videos are listed with:
+  - [x] Video player modal; native browser caption (CC) menu.
+  - [ ] **Caption files still needed:** `SpaceVideo.captions` (in `src/lib/video-catalog.ts`) renders `<track>` elements, but no `.vtt` transcripts exist yet. Add e.g. `public/videos/captions/v01.en.vtt` and `captions: [{ lang: "en", label: "English", src: "/videos/captions/v01.en.vtt" }]` per video. The track shows by default when the store's `captions` setting is on.
+  - [x] Interactive quiz system attached to each video.
+  - [x] Badge tracking persisted in `useMissionStore.quizScores`, with a badge shelf (`Badges n/3`) in the academy's video bar.
+  - [x] Re-watch and re-take at any time. Retakes keep the best score and never remove an earned badge (`recordQuizResult`).
 
 ### 3. Choose a World Section
 - [x] Moon 100% round with authentic NASA LROC equirectangular map.
 - [x] Saturn rings true-color Cassini ivory/gold with translucent crepe ring and Cassini division.
 - [x] Saturn + rings total size matched to Moon and Mars.
 - [x] Rings kept static and fully inside the screen boundaries.
-- [ ] Check Jupiter, Mars, and Ceres textures/lighting for consistency.
+- [x] Checked Jupiter (`jupiter.jpg` 720×360), Mars (`mars.jpg` 1440×720): both 2:1 equirectangular, same `Surface` material and scene lighting as Moon/Saturn. Consistent.
+- [ ] Ceres has no local texture and renders as an untextured colour globe (captioned "Illustrative globe · surface color only"). To match the others, add a NASA Dawn Ceres equirectangular map to `public/textures/nasa-3d/ceres.jpg` and register it in the `maps` object in `Presentation.tsx`.
 
 ---
 
@@ -94,12 +100,15 @@ The user outlined specific navigation and experience refinements to be completed
 | File Path | Description |
 | :--- | :--- |
 | `src/components/game/Presentation.tsx` | Main Three.js Canvas: 3D Earth, Moon, Mars, Ceres, Jupiter, Saturn with rings, lighting, camera controls. |
+| `src/components/game/Hud.tsx` | Operations HUD (check → report) with Back to Home header. |
 | `src/components/game/GameScreens.tsx` | UI Phase Overlays: Home, Destination selection (`missions`), Launch Vehicle, Route, etc. |
-| `src/components/game/ReferenceHud.tsx` | Alternate reference HUD layout, navigation headers, and modal settings. |
+| `src/components/game/ReferenceHud.tsx` | Alternate reference HUD layout (currently not mounted). |
 | `src/components/game/city/CityOverlay.tsx` | Forge City Central Plaza 3D walkthrough & interactive district stations. |
 | `src/components/game/city/CityLearningActivity.tsx`| In-city learning terminals, quizzes, and multimedia activities. |
 | `src/components/game/video/FirstTimeCadetIntro.tsx`| Cadet induction video modal and academy launcher. |
-| `src/store/mission.store.ts` | Central Zustand store: active phase (`menu`, `missions`, `vehicle`, etc.), active mission, active video, badges. |
+| `src/components/game/video/CadetVideoAcademy.tsx`| Video Academy modal: 3 videos, quizzes, badge shelf. |
+| `src/lib/video-catalog.ts` | Video metadata, quizzes, badges, optional caption tracks. |
+| `src/stores/mission-store.ts` | Central Zustand store: active phase, active mission, video modal, quiz scores/badges, and navigation actions `goHome()`, `enterCityPlaza()`, `openAcademy()`. |
 | `src/locales/resources.ts` | Complete i18n text dictionaries (EN, BN, HI, ES, AR, FR). |
 | `public/textures/nasa-3d/` | Local NASA textures: `earth-blue-marble.jpg`, `moon.jpg`, `saturn.jpg`, `saturn-rings.png`, etc. |
 
@@ -127,5 +136,5 @@ npx tsc --noEmit
 > **Instructions for the AI Assistant:**
 > 1. Do **NOT** rewrite published git history (connected to Lovable; see `AGENTS.md`).
 > 2. Continue from **Section 3: Active User Intent & Agreed Roadmap**.
-> 3. Priority #1 is the navigation flow (ensuring "Back to Home" is omnipresent and the Learn tab displays all 3 videos with their respective quizzes and badge systems).
+> 3. Navigation (Back to Home, City Plaza hub) and the 3-video Learn suite are done. Remaining open items: caption `.vtt` files and a Ceres texture (Section 3). New navigation must use `goHome()` / `enterCityPlaza()` / `openAcademy()` rather than `go("menu")` / `go("city")` / `openVideo("v01")`.
 > 4. Keep all state in `useMissionStore` and read UI strings via `t()` in `resources.ts`.

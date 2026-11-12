@@ -9,7 +9,9 @@ export function CityOverlay() {
   const completed = useMissionStore((s) => s.completedCityActivities);
   const activeZoneId = useMissionStore((s) => s.activeCityZone);
   const go = useMissionStore((s) => s.go);
-  const openVideo = useMissionStore((s) => s.openVideo);
+  const openAcademy = useMissionStore((s) => s.openAcademy);
+  const goHome = useMissionStore((s) => s.goHome);
+  const newRun = useMissionStore((s) => s.newRun);
   const activeZone = FORGE_CITY_DISTRICTS.find((z) => z.id === activeZoneId);
 
   return (
@@ -37,21 +39,21 @@ export function CityOverlay() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => go("menu")}
+            onClick={() => goHome()}
             className="border-cyan-500/50 bg-slate-900/90 text-xs font-bold text-cyan-300 hover:bg-cyan-950 hover:text-white shadow-md shadow-cyan-950/40"
           >
-            <Home className="mr-1.5 size-3.5" /> Back to Home
+            <Home className="mr-1.5 size-3.5" /> {t("ui.nav.backHome")}
           </Button>
           <Button
             size="sm"
-            onClick={() => openVideo("v01")}
+            onClick={() => openAcademy()}
             className="bg-amber-400 font-extrabold text-slate-950 hover:bg-amber-300 text-xs shadow-md shadow-amber-400/20"
           >
-            🎬 Cadet Cinema (3 Videos)
+            🎬 {t("ui.nav.videoAcademy")} (3)
           </Button>
           <Button
             size="sm"
-            onClick={() => go("missions")}
+            onClick={() => newRun("missions")}
             className="bg-cyan-500 font-bold text-slate-950 hover:bg-cyan-400 text-xs"
           >
             <Rocket className="mr-1 size-3.5" /> Launch Operations
@@ -102,10 +104,10 @@ export function CityOverlay() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => go("menu")}
+            onClick={() => goHome()}
             className="flex items-center gap-1.5 text-xs text-cyan-300 hover:text-white"
           >
-            <Home className="size-3.5" /> Home
+            <Home className="size-3.5" /> {t("ui.game.home")}
           </Button>
           <div className="h-4 w-px bg-slate-800" />
           {(["classroom", "training", "research"] as const).map((activity) => (
@@ -116,10 +118,10 @@ export function CityOverlay() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => openVideo("v01")}
+            onClick={() => openAcademy()}
             className="flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200"
           >
-            🎬 Cadet Videos
+            🎬 {t("ui.nav.videoAcademy")}
           </Button>
           <div className="h-4 w-px bg-slate-800" />
           <Button

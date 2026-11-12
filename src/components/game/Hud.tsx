@@ -70,7 +70,7 @@ function Menu() {
       <div className="animate-fade-in"><Logo big /></div>
       <div className="pointer-events-auto flex max-w-xs flex-col gap-2">
         <Btn icon={<Rocket size={15} />} onClick={() => { s.newRun("missions"); s.say("New mission — choose a destination"); }}>Start mission</Btn>
-        <Btn icon={<Sparkles size={15} />} onClick={() => s.openVideo("v01")}>🎬 Cadet Videos & Quizzes</Btn>
+        <Btn icon={<Sparkles size={15} />} onClick={() => s.openAcademy()}>🎬 Cadet Videos & Quizzes</Btn>
         {s.attempts > 0 && <Btn tone="ghost" icon={<Wrench size={15} />} onClick={() => s.go("build")}>Continue design</Btn>}
         <Btn tone="ghost" icon={<Database size={15} />} onClick={() => setModal("data")}>NASA data sources</Btn>
         <Btn tone="ghost" icon={<Settings size={15} />} onClick={() => setModal("settings")}>Settings</Btn>
@@ -360,7 +360,7 @@ function Nav({ back, next, nextLabel = "Next", backLabel = "Back", disabled }: {
 
 export function Hud() {
   const { t } = useTranslation();
-  const phase = useMissionStore((s) => s.phase), go = useMissionStore((s) => s.go);
+  const phase = useMissionStore((s) => s.phase), goHome = useMissionStore((s) => s.goHome);
   const screens: Partial<Record<Phase, ReactNode>> = { check: <ReadinessPanel />, launch: <LaunchHud />, flight: <Flight />, encounter: <Encounter />, failure: <Failure />, rescue: <Rescue />, docking: <Docking />, landing: <Landing />, report: <MissionReport /> };
   if (["menu", "missions", "vehicle", "brief", "route", "routePreview", "objectives", "budget", "fuel", "power", "comms", "instruments", "overview", "craft", "build"].includes(phase)) return <GameScreens phase={phase} />;
   return (
@@ -368,13 +368,14 @@ export function Hud() {
       {(
         <div className="absolute inset-x-2 top-2 flex items-start justify-between gap-2 sm:inset-x-4 sm:top-4">
           <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
-            <button aria-label="Main menu" onClick={() => go("menu")}><Logo /></button>
+            <button aria-label={t("ui.nav.backHome")} onClick={goHome}><Logo /></button>
             <button
-              onClick={() => go("menu")}
-              aria-label="Back to Home"
-              className="flex items-center gap-1 rounded-md border border-slate-700/60 bg-slate-900/80 px-2 py-1 text-xs font-bold text-cyan-300 transition hover:bg-slate-800 hover:text-white"
+              onClick={goHome}
+              aria-label={t("ui.nav.backHome")}
+              title={t("ui.nav.backHome")}
+              className="flex items-center gap-1 rounded-md border border-cyan-500/40 bg-slate-900/80 px-2 py-1 text-xs font-bold text-cyan-300 transition hover:bg-slate-800 hover:text-white"
             >
-              <Home size={13} /> <span className="hidden sm:inline">Home</span>
+              <Home size={13} /> <span className="sm:hidden">{t("ui.game.home")}</span><span className="hidden sm:inline">{t("ui.nav.backHome")}</span>
             </button>
             <span className="hidden text-[13px] font-bold uppercase tracking-[0.2em] text-cyan-soft sm:inline">{t(`exp.${phase === "launch" ? "launchPhase" : phase}`)}</span>
           </div>

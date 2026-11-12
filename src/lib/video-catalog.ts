@@ -21,6 +21,8 @@ export interface SpaceVideo {
   subtitle: string;
   badgeTitle: string;
   file: string;
+  /** Optional WebVTT caption tracks (e.g. /videos/captions/v01.en.vtt). Rendered as <track> elements. */
+  captions?: { lang: string; label: string; src: string }[];
   durationLabel: string;
   audience: string;
   category: string;

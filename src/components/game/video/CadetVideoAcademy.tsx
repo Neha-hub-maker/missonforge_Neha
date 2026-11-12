@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Trophy,
   Compass,
+  Home,
 } from "lucide-react";
 import { useMissionStore } from "../../../stores/mission-store";
 import { SPACE_VIDEOS, type SpaceVideo, type QuizQuestion } from "../../../lib/video-catalog";
@@ -27,7 +28,10 @@ export function CadetVideoAcademy() {
   const quizScores = useMissionStore((s) => s.quizScores);
   const watchedVideos = useMissionStore((s) => s.watchedVideos);
   const resetAllSessions = useMissionStore((s) => s.resetAllSessions);
-  const go = useMissionStore((s) => s.go);
+  const goHome = useMissionStore((s) => s.goHome);
+  const enterCityPlaza = useMissionStore((s) => s.enterCityPlaza);
+  const captionsOn = useMissionStore((s) => s.captions);
+  const { t } = useTranslation();
 
   const [activeVideoId, setActiveVideoId] = useState<"v01" | "v02" | "v03">(
     modal?.videoId || "v01"
@@ -112,6 +116,8 @@ export function CadetVideoAcademy() {
     setShowHint(false);
   };
 
+  const earnedCount = SPACE_VIDEOS.filter((v) => quizScores[v.id]?.passed).length;
+
   if (!modal?.isOpen) return null;
 
   return (
@@ -144,6 +150,16 @@ export function CadetVideoAcademy() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={goHome}
+              aria-label={t("ui.nav.backHome")}
+              className="border border-cyan-500/50 bg-slate-900 text-xs font-bold text-cyan-300 hover:bg-cyan-950 hover:text-white"
+            >
+              <Home className="mr-1 size-3.5" />
+              <span className="sm:hidden">{t("ui.game.home")}</span>
+              <span className="hidden sm:inline">{t("ui.nav.backHome")}</span>
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -219,6 +235,25 @@ export function CadetVideoAcademy() {
               </button>
             );
           })}
+          {/* Persisted badge shelf (useMissionStore.quizScores) */}
+          <div
+            className="ml-auto flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-950/20 px-3 py-1.5"
+            aria-label={`${t("ui.nav.badges")} ${earnedCount}/${SPACE_VIDEOS.length}`}
+          >
+            <Award className="size-3.5 text-amber-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+              {t("ui.nav.badges")} {earnedCount}/{SPACE_VIDEOS.length}
+            </span>
+            {SPACE_VIDEOS.map((v) => (
+              <span
+                key={v.id}
+                title={v.badge.name}
+                className={quizScores[v.id]?.passed ? "text-base" : "text-base opacity-25 grayscale"}
+              >
+                {v.badge.icon}
+              </span>
+            ))}
+          </div>
         </nav>
 
         {/* Mode Switcher: Video vs Quiz */}
@@ -278,7 +313,11 @@ export function CadetVideoAcademy() {
                     onEnded={handleVideoEnded}
                     className="size-full object-contain bg-black"
                     src={activeVideo.file}
-                  />
+                  >
+                    {activeVideo.captions?.map((c, i) => (
+                      <track key={c.src} kind="captions" src={c.src} srcLang={c.lang} label={c.label} default={i === 0 && captionsOn} />
+                    ))}
+                  </video>
 
                   {videoEnded && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 p-6 text-center backdrop-blur-sm animate-fade-in">
@@ -592,7 +631,7 @@ export function CadetVideoAcademy() {
                       <span className="text-4xl">{activeVideo.badge.icon}</span>
                       <div className="text-left">
                         <div className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
-                          {currentScore >= 2 ? "Badge Earned!" : "Badge Locked"}
+                          {currentScore >= 2 || prevResult?.passed ? "Badge Earned!" : "Badge Locked"}
                         </div>
                         <h4 className="text-base font-bold text-white">
                           {activeVideo.badge.name}
@@ -634,8 +673,7 @@ export function CadetVideoAcademy() {
 
                     <Button
                       onClick={() => {
-                        closeVideo();
-                        go("city");
+                        enterCityPlaza();
                       }}
                       className="bg-emerald-500 font-bold text-slate-950 hover:bg-emerald-400"
                     >

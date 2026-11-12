@@ -74,7 +74,7 @@ function Academy() {
   const [stage, setStage] = useState(0);
   const [stageFeedback, setStageFeedback] = useState("");
   const [quizPassed, setQuizPassed] = useState(false);
-  const openVideo = useMissionStore((s) => s.openVideo);
+  const openAcademy = useMissionStore((s) => s.openAcademy);
   const openLesson = useMissionStore((s) => s.set);
   return (
     <>
@@ -93,7 +93,7 @@ function Academy() {
           </div>
           <Button
             size="sm"
-            onClick={() => openVideo("v01")}
+            onClick={() => openAcademy()}
             className="bg-amber-400 font-bold text-slate-950 hover:bg-amber-300 text-xs shadow-md shadow-amber-400/20"
           >
             Open Video Cinema
@@ -397,7 +397,8 @@ function Research() {
 
 export function CityLearningActivity({ activity }: { activity: CityActivity }) {
   const { t, i18n } = useTranslation();
-  const go = useMissionStore((s) => s.go);
+  const goHome = useMissionStore((s) => s.goHome);
+  const enterCityPlaza = useMissionStore((s) => s.enterCityPlaza);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus();
@@ -412,10 +413,10 @@ export function CityLearningActivity({ activity }: { activity: CityActivity }) {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => go("menu")} className="text-cyan-300 hover:text-white">
-            <Home className="mr-1.5 size-4" /> Home
+          <Button variant="ghost" onClick={() => goHome()} aria-label={t("ui.nav.backHome")} className="text-cyan-300 hover:text-white">
+            <Home className="mr-1.5 size-4" /> {t("ui.nav.backHome")}
           </Button>
-          <Button variant="secondary" onClick={() => go("city")}>
+          <Button variant="secondary" onClick={() => enterCityPlaza()}>
             <ArrowLeft aria-hidden="true" />
             {t("cityLearning.return")}
           </Button>
