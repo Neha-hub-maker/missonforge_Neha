@@ -71,6 +71,8 @@ type State = Design & {
   goHome: () => void;
   /** Primary hub: lands the cadet in Central City Plaza with all overlays closed. */
   enterCityPlaza: () => void;
+  /** Skips setup: loads a launchable Moon mission and opens the launch check. */
+  quickLaunch: () => void;
   markVideoWatched: (videoId: string) => void;
   recordQuizResult: (videoId: string, score: number, total: number) => void;
   setHasSeenIntroVideo: (seen: boolean) => void;
@@ -162,6 +164,32 @@ export const useMissionStore = create<State>()(
         }),
       goHome: () =>
         set({ phase: "menu", referenceModel: false, videoModal: null, showCadetIntroModal: false, learn: null }),
+      quickLaunch: () =>
+        set((s) => ({
+          ...run,
+          mission: "Moon",
+          route: "safe",
+          launchVehicle: DEFAULT_LAUNCH_VEHICLE,
+          engine: "chemical" as EngineId,
+          engines: 1,
+          tanks: 4,
+          fuel: 80,
+          wings: 4,
+          rtgs: 0,
+          antennas: 2,
+          shield: true,
+          battery: false,
+          instruments: ["camera", "spectrometer"],
+          craft: "explorer",
+          objective: "surface",
+          phase: "check",
+          attempts: s.attempts + 1,
+          status: [],
+          referenceModel: false,
+          videoModal: null,
+          showCadetIntroModal: false,
+          learn: null,
+        })),
       enterCityPlaza: () =>
         set({ phase: "city", activeCityZone: null, referenceModel: false, videoModal: null, showCadetIntroModal: false, learn: null }),
       markVideoWatched: (videoId) =>
@@ -225,6 +253,7 @@ export const useMissionStore = create<State>()(
           openAcademy: _o,
           goHome: _p,
           enterCityPlaza: _q,
+          quickLaunch: _r,
           ...rest
         } = s;
         void status;

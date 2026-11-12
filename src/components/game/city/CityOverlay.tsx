@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useMissionStore } from "../../../stores/mission-store";
 import { FORGE_CITY_DISTRICTS } from "./city-data";
 import { Button } from "../../ui/button";
-import { Compass, ChevronRight, Rocket, Building2, Home } from "lucide-react";
+import type { ReactNode } from "react";
+import { Compass, ChevronRight, ChevronUp, ChevronDown, ChevronLeft, Rocket, Building2, Home, Clapperboard, Wrench, Flame } from "lucide-react";
 
 export function CityOverlay() {
   const { t } = useTranslation();
@@ -22,14 +23,14 @@ export function CityOverlay() {
         <div className="pointer-events-auto rounded-xl border border-cyan-500/30 bg-slate-950/75 p-3.5 shadow-lg backdrop-blur-md">
           <div className="flex items-center gap-2 text-cyan-400">
             <Compass className="size-4 animate-spin-slow" />
-            <span className="text-[11px] font-bold uppercase tracking-widest">
+            <span className="text-xs font-bold uppercase tracking-widest">
               FORGE CITY · EARTH SPACEPORT HUB
             </span>
           </div>
           <h2 className="mt-0.5 text-base font-extrabold text-slate-100 sm:text-lg">
             {activeZone ? activeZone.name : "Central City Plaza"}
           </h2>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-xs text-slate-400">
             {activeZone ? activeZone.sub : "Navigable Pedestrian Campus & District Network"}
           </p>
         </div>
@@ -49,7 +50,7 @@ export function CityOverlay() {
             onClick={() => openAcademy()}
             className="bg-amber-400 font-extrabold text-slate-950 hover:bg-amber-300 text-xs shadow-md shadow-amber-400/20"
           >
-            🎬 {t("ui.nav.videoAcademy")} (3)
+            <Clapperboard className="mr-1.5 size-3.5" /> {t("ui.nav.videoAcademy")}
           </Button>
           <Button
             size="sm"
@@ -62,7 +63,7 @@ export function CityOverlay() {
       </header>
 
       {/* Exploration Controls Indicator */}
-      <div className="pointer-events-auto self-start rounded-lg border border-slate-800 bg-slate-950/65 px-3 py-2 text-[11px] text-slate-400 backdrop-blur-sm">
+      <div className="mf-kbd-hint pointer-events-auto self-start rounded-lg border border-slate-800 bg-slate-950/65 px-3 py-2 text-xs text-slate-400 backdrop-blur-sm">
         <span className="font-semibold text-slate-200">Exploration Controls:</span> Use{" "}
         <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-cyan-300">W</kbd>
         <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-cyan-300">A</kbd>
@@ -70,6 +71,8 @@ export function CityOverlay() {
         <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-cyan-300">D</kbd> or Arrow Keys to walk.
         Hold <kbd className="rounded bg-slate-800 px-1 py-0.5 font-mono text-cyan-300">Shift</kbd> to sprint.
       </div>
+
+      <CityMovePad />
 
       {/* Proximity Interaction Prompt */}
       <footer className="flex flex-col items-center">
@@ -79,7 +82,7 @@ export function CityOverlay() {
               <span className="text-2xl">{activeZone.icon}</span>
               <div>
                 <h3 className="text-sm font-bold text-slate-100">{activeZone.name}</h3>
-                <p className="text-[11px] text-cyan-200">{activeZone.sub}</p>
+                <p className="text-xs text-cyan-200">{activeZone.sub}</p>
               </div>
             </div>
             {activeZone.targetPhase && (
@@ -121,7 +124,7 @@ export function CityOverlay() {
             onClick={() => openAcademy()}
             className="flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200"
           >
-            🎬 {t("ui.nav.videoAcademy")}
+            <Clapperboard className="size-3.5" /> {t("ui.nav.videoAcademy")}
           </Button>
           <div className="h-4 w-px bg-slate-800" />
           <Button
@@ -130,7 +133,7 @@ export function CityOverlay() {
             onClick={() => go("missions")}
             className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-cyan-400"
           >
-            🚀 Space Center
+            <Rocket className="size-3.5" /> Space Center
           </Button>
           <div className="h-4 w-px bg-slate-800" />
           <Button
@@ -139,7 +142,7 @@ export function CityOverlay() {
             onClick={() => go("build")}
             className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-orange-400"
           >
-            🔧 Assembly Hangar
+            <Wrench className="size-3.5" /> Assembly Hangar
           </Button>
           <div className="h-4 w-px bg-slate-800" />
           <Button
@@ -148,10 +151,46 @@ export function CityOverlay() {
             onClick={() => go("check")}
             className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-rose-400"
           >
-            🔥 Launch Pad 39X
+            <Flame className="size-3.5" /> Launch Pad 39X
           </Button>
         </div>
       </footer>
+    </div>
+  );
+}
+
+// On-screen movement for touch screens and mouse users. ForgeCity listens for
+// keyboard events on window, so the pad sends the same W/A/S/D/E keys.
+function sendKey(key: string, down: boolean) {
+  window.dispatchEvent(new KeyboardEvent(down ? "keydown" : "keyup", { key }));
+}
+
+function CityMovePad() {
+  const { t } = useTranslation();
+  const btn = (key: string, area: string, label: string, icon: ReactNode) => (
+    <button
+      type="button"
+      aria-label={label}
+      className={`mf-pad-btn mf-pad-${area}`}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        sendKey(key, true);
+      }}
+      onPointerUp={() => sendKey(key, false)}
+      onPointerCancel={() => sendKey(key, false)}
+      onLostPointerCapture={() => sendKey(key, false)}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {icon}
+    </button>
+  );
+  return (
+    <div className="mf-pad pointer-events-auto" role="group" aria-label={t("ui.nav.move")}>
+      {btn("w", "up", `${t("ui.nav.move")} ↑`, <ChevronUp className="size-5" />)}
+      {btn("a", "left", `${t("ui.nav.move")} ←`, <ChevronLeft className="size-5" />)}
+      {btn("e", "mid", "E", <span>E</span>)}
+      {btn("d", "right", `${t("ui.nav.move")} →`, <ChevronRight className="size-5" />)}
+      {btn("s", "down", `${t("ui.nav.move")} ↓`, <ChevronDown className="size-5" />)}
     </div>
   );
 }

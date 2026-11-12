@@ -5,8 +5,15 @@ const ensureDataProp = (proto: any) => {
   if (proto && !Object.prototype.hasOwnProperty.call(proto, "data")) {
     Object.defineProperty(proto, "data", {
       get() {
-        if (!this._data) this._data = {};
-        return this._data;
+        if (!this._data || typeof this._data !== "object") this._data = {};
+        // Dev only: TanStack devtools tags elements with data-tsd-source, which R3F
+        // pierces into data.tsd.source. Keep data.tsd an object that always accepts it.
+        const d = this._data;
+        if (typeof d.tsd !== "object" || d.tsd === null) {
+          const sink = {};
+          Object.defineProperty(d, "tsd", { get: () => sink, set: () => {}, configurable: true, enumerable: false });
+        }
+        return d;
       },
       set(val) {
         this._data = val;

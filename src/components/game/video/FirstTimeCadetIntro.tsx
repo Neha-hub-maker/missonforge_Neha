@@ -32,10 +32,10 @@ export function FirstTimeCadetIntro() {
             <span className="flex size-7 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
               <Rocket className="size-4" />
             </span>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
               MISSION FORGE · CADET INDUCTION
             </span>
-            <span className="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+            <span className="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[11px] font-bold text-amber-300">
               New Cadet Orientation
             </span>
           </div>
@@ -62,7 +62,7 @@ export function FirstTimeCadetIntro() {
           <div>
             <div className="flex items-center gap-1.5">
               <h4 className="text-sm font-bold text-white">Dr. Ayesha</h4>
-              <span className="text-[11px] text-cyan-400 font-medium">· Mission Scientist & Mentor</span>
+              <span className="text-xs text-cyan-400 font-medium">· Mission Scientist & Mentor</span>
             </div>
             <p className="mt-1 text-xs text-slate-300 leading-relaxed">
               "Welcome to Mission Forge, Cadet! Before you design rockets and blast into the solar system, watch this special orientation video to discover why humanity explores the cosmos and how satellites protect life on Earth!"
@@ -74,7 +74,7 @@ export function FirstTimeCadetIntro() {
         <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span className="font-semibold text-slate-200">Video 1 of 3: Introductory Lesson</span>
-            <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-cyan-300">Ages 8–14</span>
+            <span className="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-mono text-cyan-300">Ages 8–14</span>
           </div>
           <h3 className="mt-1 text-base font-extrabold text-white">
             Why Do We Explore Space? The Importance of Space Exploration
@@ -113,7 +113,7 @@ export function FirstTimeCadetIntro() {
         </div>
 
         {/* Reassurance note for re-watching */}
-        <p className="mt-4 text-center text-[11px] text-slate-400">
+        <p className="mt-4 text-center text-xs text-slate-400">
           💡 <em>You can re-watch all 3 videos and retake quizzes anytime from the Forge City Academy, Main Menu, or Navigation Bar!</em>
         </p>
       </div>

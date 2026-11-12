@@ -44,7 +44,7 @@ function Frame({ phase, children }: { phase: Phase; children: ReactNode }) {
       </div>
     </header>
     {children}
-    {menu && <div className="gm-backdrop" onClick={() => setMenu(false)}><section className="gm-dialog" onClick={e => e.stopPropagation()}><Button variant="ghost" size="icon" className="gm-close" aria-label={t("ui.learn.close")} onClick={() => setMenu(false)}><X /></Button><h2>{t("ui.game.options")}</h2><Button variant="secondary" onClick={() => { s.goHome(); setMenu(false); }}><Home size={16} /> {t("ui.nav.backHome")}</Button><Button variant="secondary" onClick={() => { s.enterCityPlaza(); setMenu(false); }}><Compass /> {t("ui.nav.flightPlan")} · {t("ui.nav.cityPlaza")}</Button><label>{t("ui.voice.language")}<select value={s.lang} onChange={e => s.set({ lang: e.target.value as typeof s.lang })}>{LANGS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></label><Button variant="secondary" onClick={() => s.set({ quality: s.quality === "high" ? "low" : "high" })}><Settings2 /> {t("ui.game.graphics")}: {s.quality}</Button><Button variant="secondary" onClick={() => { s.openAcademy(); setMenu(false); }}><Sparkles /> 🎬 {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}</Button><Button variant="secondary" onClick={() => { s.set({ learn: "index" }); setMenu(false); }}><BookOpen /> {t("ui.learn.title")}</Button><p>NASA NSSDCA · NASA/JPL Horizons · NASA Image and Video Library</p></section></div>}
+    {menu && <div className="gm-backdrop" onClick={() => setMenu(false)}><section className="gm-dialog" onClick={e => e.stopPropagation()}><Button variant="ghost" size="icon" className="gm-close" aria-label={t("ui.learn.close")} onClick={() => setMenu(false)}><X /></Button><h2>{t("ui.game.options")}</h2><Button variant="secondary" onClick={() => { s.goHome(); setMenu(false); }}><Home size={16} /> {t("ui.nav.backHome")}</Button><Button variant="secondary" onClick={() => { s.enterCityPlaza(); setMenu(false); }}><Compass /> {t("ui.nav.flightPlan")} · {t("ui.nav.cityPlaza")}</Button><label>{t("ui.voice.language")}<select value={s.lang} onChange={e => s.set({ lang: e.target.value as typeof s.lang })}>{LANGS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></label><Button variant="secondary" onClick={() => s.set({ quality: s.quality === "high" ? "low" : "high" })}><Settings2 /> {t("ui.game.graphics")}: {s.quality}</Button><Button variant="secondary" onClick={() => { s.openAcademy(); setMenu(false); }}><Sparkles /> {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}</Button><Button variant="secondary" onClick={() => { s.set({ learn: "index" }); setMenu(false); }}><BookOpen /> {t("ui.learn.title")}</Button><p>NASA NSSDCA · NASA/JPL Horizons · NASA Image and Video Library</p></section></div>}
     {mentor && <Mentor onClose={() => setMentor(false)} />}
   </div>;
 }
@@ -82,9 +82,8 @@ function Start() {
         >
           <Rocket /> {t("ui.nav.cityPlaza")} <ArrowRight />
         </Button>
-        {/* Flight Plan always lands in Central City Plaza, the primary hub; missions launch from its Space Center. */}
-        <Button size="lg" variant="secondary" onClick={() => s.enterCityPlaza()}>
-          <Compass /> {t("ui.nav.flightPlan")} <ArrowRight />
+        <Button size="lg" variant="secondary" onClick={() => s.quickLaunch()} title={t("ui.home.quickHint")}>
+          <Play /> {t("ui.home.quick")} <ArrowRight />
         </Button>
       </div>
       <div>
@@ -93,12 +92,12 @@ function Start() {
           onClick={() => s.openAcademy()}
           className="border-amber-400/40 bg-slate-900/80 hover:bg-amber-950/40 text-amber-300 hover:text-amber-200"
         >
-          <Sparkles className="size-4" /> 🎬 {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}
+          <Sparkles className="size-4" /> {t("ui.nav.learn")} · {t("ui.nav.videoAcademy")}
         </Button>
       </div>
     </div>
     {s.attempts > 0 && <Button className="mf-resume" variant="ghost" onClick={() => s.go("build")}>{t("ui.home.continue")}<ArrowRight /></Button>}
-  </div><div className="mf-home-coordinate"><span>{t("exp.destination")}</span><strong>{t("ui.home.title2")}</strong><small>{t("ui.home.tagline")}</small></div>
+  </div><aside className="mf-home-proof" aria-label={t("ui.home.proofTitle")}><span>{t("ui.home.proofTitle")}</span><ul><li><i className="is-live" />{t("ui.home.proof1")}</li><li><i className="is-live" />{t("ui.home.proof2")}</li><li><i />{t("ui.home.proof3")}</li></ul></aside>
   <footer className="mf-home-footer"><span>{t("exp.earthCredit")}</span><span>{t("exp.independent")}</span></footer></main></Frame>;
 }
 function DestinationCaption({ mission }: { mission: MissionId }) {
@@ -125,6 +124,7 @@ function RoutePick() {
   const s = useMissionStore(); const { t } = useTranslation();
   return <Layout phase="route" title={t("ui.flow.routePick")} back="brief" next="routePreview" nextLabel={t("ui.flow.review")} info={t(`exp.destinations.${s.mission}.note`)} media={<div className="gm-scene-caption"><Compass size={26} /><span>{t("ui.game.dragMap")}</span><small>{t("exp.mapNote")}</small></div>}>
     {(Object.keys(ROUTES) as RouteId[]).map(id => <Button key={id} variant="ghost" aria-pressed={s.route === id} className={`gm-choice ${s.route === id ? "on" : ""}`} onClick={() => s.set({ route: id })}><span>{t(`exp.route_${id}`)}<small>{t(`exp.routeNote_${id}`)}</small><small>{Math.round(MISSIONS[s.mission].days * ROUTES[id].time)} d · {(MISSIONS[s.mission].dv * ROUTES[id].dv).toFixed(2)} km/s</small></span>{s.route === id && <Check />}</Button>)}
+    <p className="gm-source">{t("ui.home.routeNote")}</p>
   </Layout>;
 }
 function RoutePreview() {

@@ -136,10 +136,10 @@ export function CadetVideoAcademy() {
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">
                   Mission Forge · Cadet Space Academy
                 </span>
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-300">
                   Ages 8–14
                 </span>
               </div>
@@ -219,12 +219,12 @@ export function CadetVideoAcademy() {
                       {v.title}
                     </span>
                     {scoreData?.passed && (
-                      <span className="text-[11px]" title="Quiz Passed!">
+                      <span className="text-xs" title="Quiz Passed!">
                         ⭐
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-400">
+                  <div className="text-[11px] text-slate-400">
                     {scoreData
                       ? `Score: ${scoreData.score}/${scoreData.total}`
                       : isWatched
@@ -241,7 +241,7 @@ export function CadetVideoAcademy() {
             aria-label={`${t("ui.nav.badges")} ${earnedCount}/${SPACE_VIDEOS.length}`}
           >
             <Award className="size-3.5 text-amber-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">
               {t("ui.nav.badges")} {earnedCount}/{SPACE_VIDEOS.length}
             </span>
             {SPACE_VIDEOS.map((v) => (
@@ -287,7 +287,7 @@ export function CadetVideoAcademy() {
             </button>
           </div>
 
-          <div className="text-[11px] text-slate-400 hidden sm:block">
+          <div className="text-xs text-slate-400 hidden sm:block">
             {tab === "video" ? (
               <span>Watch the briefing, then test your knowledge!</span>
             ) : (
@@ -356,7 +356,7 @@ export function CadetVideoAcademy() {
                 {/* Video Info Strip */}
                 <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
                       {activeVideo.category}
                     </span>
                     <h3 className="text-sm font-bold text-slate-100">
@@ -406,13 +406,13 @@ export function CadetVideoAcademy() {
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{activeVideo.badge.icon}</span>
                     <div>
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                      <div className="text-[11px] font-bold uppercase tracking-widest text-amber-400">
                         Badge Award
                       </div>
                       <h4 className="text-sm font-bold text-amber-200">
                         {activeVideo.badge.name}
                       </h4>
-                      <p className="text-[11px] text-slate-300">
+                      <p className="text-xs text-slate-300">
                         {activeVideo.badge.tagline}
                       </p>
                     </div>
@@ -423,7 +423,7 @@ export function CadetVideoAcademy() {
                       <span>Score: {prevResult.score}/{prevResult.total} ⭐</span>
                     </div>
                   ) : (
-                    <p className="mt-3 text-[11px] text-slate-400 italic">
+                    <p className="mt-3 text-xs text-slate-400 italic">
                       Score at least 2 correct answers on the quiz to unlock this badge!
                     </p>
                   )}
@@ -438,7 +438,7 @@ export function CadetVideoAcademy() {
                   {/* Progress Header */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+                      <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
                         Interactive Cadet Quiz
                       </span>
                       <h3 className="text-base font-bold text-slate-100">
@@ -630,7 +630,7 @@ export function CadetVideoAcademy() {
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">{activeVideo.badge.icon}</span>
                       <div className="text-left">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                        <div className="text-[11px] font-bold uppercase tracking-widest text-amber-400">
                           {currentScore >= 2 || prevResult?.passed ? "Badge Earned!" : "Badge Locked"}
                         </div>
                         <h4 className="text-base font-bold text-white">
